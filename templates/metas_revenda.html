@@ -1,0 +1,725 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Painel de Metas Revenda</h1>
+  <p class="page-subtitle">Mês de referência: <strong>{{ mes_ref }}</strong></p>
+</div>
+
+<div class="pex-section">
+  <h2 class="pex-title">🏆 PEX — Performance Excellence</h2>
+  <p class="pex-subtitle">Acompanhamento de metas por trimestre</p>
+
+  <div class="pex-grid">
+    <div class="pex-left-col">
+      <!-- SDPO e DPO -->
+      <div class="card-pex">
+        <div class="card-pex-header">
+          <h3 class="card-pex-title">📊 SDPO</h3>
+          <div class="trimestres-pontos">
+            {% for t in ["Q1","Q2","Q3","Q4"] %}
+            {% set val = pontos[t] %}
+            <div class="trimestre-item">
+              <span class="trimestre-label">{{ t }}</span>
+              <span class="trimestre-valor">{% if val is not none %}{{ "{:,.0f}".format(val) }}{% else %}—{% endif %}</span>
+              <span class="trimestre-unidade">pts</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="card-pex-body">
+          <h4 class="card-pex-sub-title">SPO — SCORE DE PERFORMANCE OPERACIONAL</h4>
+          <div class="card-pex">
+  <div class="card-pex-header">
+    <h3 class="card-pex-title">SPO — SCORE DE PERFORMANCE OPERACIONAL</h3>
+  </div>
+    
+    <div class="table-responsive">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>PILAR</th>
+        <th>PTS POSSÍVEL</th>
+        {% for q in spo.qs_ativos %}
+        {% set ns = namespace(fechado=false) %}
+        {% for row in spo.rows %}
+        {% for qd in row.qs %}
+        {% if qd.q == q and qd.fechado %}{% set ns.fechado = true %}{% endif %}
+        {% endfor %}
+        {% endfor %}
+        {% if ns.fechado %}
+        <th colspan="2">{{ q }}</th>
+        {% else %}
+        <th colspan="3">{{ q }} — Vigente</th>
+        {% endif %}
+        {% endfor %}
+        <th>LE 26</th>
+        <th>ATING.</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th></th>
+        {% for q in spo.qs_ativos %}
+        {% set ns = namespace(fechado=false) %}
+        {% for row in spo.rows %}
+        {% for qd in row.qs %}
+        {% if qd.q == q and qd.fechado %}{% set ns.fechado = true %}{% endif %}
+        {% endfor %}
+        {% endfor %}
+        {% if ns.fechado %}
+        <th>PTS</th>
+        <th>%</th>
+        {% else %}
+        {% set meses_map = {
+        "Q1": ["Jan","Fev","Mar"],
+        "Q2": ["Abr","Mai","Jun"],
+        "Q3": ["Jul","Ago","Set"],
+        "Q4": ["Out","Nov","Dez"]
+        } %}
+        {% for mes in meses_map[q] %}
+        <th>{{ mes }}</th>
+        {% endfor %}
+        {% endif %}
+        {% endfor %}
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in spo.rows %}
+      <tr>
+        <td>{{ row.pilar }}</td>
+        <td>{{ "{:,.0f}".format(row.pts_possivel) if row.pts_possivel is not none else "—" }}</td>
+        {% for q in spo.qs_ativos %}
+        {% set ns = namespace(q_obj=none, fechado=false) %}
+        {% for qd in row.qs %}
+        {% if qd.q == q %}
+        {% set ns.q_obj = qd %}
+        {% if qd.fechado %}{% set ns.fechado = true %}{% endif %}
+        {% endif %}
+        {% endfor %}
+        {% if ns.fechado %}
+        <td>{{ "{:,.0f}".format(ns.q_obj.pts) if ns.q_obj and ns.q_obj.pts is not none else "—" }}</td>
+        <td>
+          {% if ns.q_obj and ns.q_obj.pct is not none %}
+          <span class="badge-ating ating-{{ ns.q_obj.cor if ns.q_obj else 'neutral' }}">
+            {{ "%.1f"|format(ns.q_obj.pct) }}%
+          </span>
+          {% else %} — {% endif %}
+        </td>
+        {% else %}
+        {% if ns.q_obj %}
+        {% for m in ns.q_obj.meses %}
+        <td>
+          {% if m.pct is not none %}
+          <span class="badge-ating ating-{{ m.cor }}">
+            {{ "%.1f"|format(m.pct) }}%
+          </span>
+          {% else %} — {% endif %}
+        </td>
+        {% endfor %}
+        {% else %}
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        <td>{{ "{:,.0f}".format(row.le26) if row.le26 is not none else "—" }}</td>
+        <td>
+          {% if row.ating is not none %}
+          <span class="badge-ating ating-{{ row.cor }}">
+            {{ "%.1f"|format(row.ating) }}%
+          </span>
+          {% if row.selo %}
+          <img src="{{ url_for('static', filename='img/' + row.selo) }}" alt="{{ row.cor }}" class="spo-selo">
+          {% endif %}
+          {% else %} — {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not spo.rows %}
+      <tr>
+        <td colspan="{{ 2 + spo.qs_ativos|length * 3 + 2 }}">Nenhum dado na aba SPO.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+  
+</div>
+
+          <h4 class="card-pex-sub-title" style="margin-top: 30px;">DPO — DESEMPENHO POR OPERAÇÃO</h4>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Pilar</th>
+                  <th>Meta</th>
+                  <th>Resultado</th>
+                  <th>Atingimento</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in dpo_data %}
+                <tr>
+                  <td>{{ row.pilar }}</td>
+                  <td>{{ "{:,.1f}".format(row.meta) if row.meta is not none else "—" }}</td>
+                  <td>{{ "{:,.1f}".format(row.resultado) if row.resultado is not none else "—" }}</td>
+                  <td class="ating-{{ row.cor }}">{% if row.ating is not none %} {{ "%.1f"|format(row.ating) }}% {% else %} — {% endif %}</td>
+                </tr>
+                {% endfor %}
+                {% if not dpo_data %}
+                <tr>
+                  <td colspan="4" class="empty-state">Nenhum dado na aba DPO.</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pex-right-col">
+      <!-- PNR -->
+      <div class="card-pex">
+        <div class="card-pex-header">
+          <h3 class="card-pex-title">📋 PNR</h3>
+        </div>
+        <div class="card-pex-body">
+          
+
+{% if pnr %}
+<div class="card-pex"> {# Adicionei um card-pex para agrupar a tabela #}
+  <div class="card-pex-header">
+    <h3 class="card-pex-title">PAINEL DE RESULTADOS — PNR</h3>
+  </div>
+  <div class="card-pex-body">
+    <div class="table-responsive">
+      <table class="data-table pnr-table"> {# Adicionei a classe pnr-table #}
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>KPI</th>
+            <th>Pts TT</th>
+            <th>Pts Rev.</th>
+            <th>Meta</th>
+            <th>Real</th>
+            <th>LE 25</th>
+            <th>Ating.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for secao in pnr %}
+            {% if secao.titulo == "TOTAL" %}
+              <tr class="pnr-total-row">
+                <td>TOTAL</td>
+                <td></td>
+                <td>{{ "{:,.0f}".format(secao.pts_tt) if secao.pts_tt is not none else "—" }}</td>
+                <td>{% if secao.total_revenda is defined and secao.total_revenda is not none %} {{ "{:,.0f}".format(secao.total_revenda) }} {% else %}—{% endif %}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="8" class="pnr-section-header">
+                  {{ secao.titulo }} {% if secao.pts_tt is not none %} <span class="pnr-section-pts">({{ "{:,.0f}".format(secao.pts_tt) }} pts)</span> {% endif %}
+                </td>
+              </tr>
+              {% for item in secao.itens %}
+                <tr class="pnr-row" data-kpi-num="{{ item.num }}" data-kpi-nome="{{ item.kpi }}" style="cursor: pointer;">
+                  <td>{{ item.num }}</td>
+                  <td>{{ item.kpi }}</td>
+                  <td>{{ "{:,.0f}".format(item.pts_tt) if item.pts_tt is not none else "—" }}</td>
+                  <td>{{ "{:,.0f}".format(item.pontos_rev) if item.pontos_rev is not none else "—" }}</td>
+                  <td>{% set m = item.meta_ytd %} {% if m is not none %} {% if m == 0 %}— {% elif m > 0 and m <= 1 %}{{ "%.1f%%"|format(m * 100) }} {% else %}{{ "{:,.1f}".format(m) }}{% endif %} {% else %}—{% endif %}</td>
+                  <td>{% set r = item.real_ytd %} {% set m = item.meta_ytd %} {% if r is not none %} {% if m is not none and m == 0 %} {{ "{:,.1f}".format(r) if r < 1000 else "{:,.0f}".format(r) }} {% elif r > 0 and r <= 1 and (m is none or (m > 0 and m <= 1)) %} {{ "%.1f%%"|format(r * 100) }} {% else %} {{ "{:,.1f}".format(r) if r < 1000 else "{:,.0f}".format(r) }} {% endif %} {% else %}—{% endif %}</td>
+                  <td>{{ "{:,.0f}".format(item.le25) if item.le25 is not none else "—" }}</td>
+                  <td class="ating-{{ item.cor }}">{% if item.ating is not none %} {{ "%.1f"|format(item.ating) }}% {% else %} — {% endif %}</td>
+                </tr>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <span class="empty-state-icon">🚧</span>
+  <p class="empty-state-text">Sem dados de PNR.<br>Verifique o arquivo `data/PNR.xlsx`.</p>
+</div>
+{% endif %}
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alertas-section">
+  <div class="alertas-header">
+    <h2 class="alertas-title"># Painel de Metas Não Atingidas</h2>
+    <p class="alertas-subtitle">Resumo do mês de referência: <strong>{{ mes_ref }}</strong></p>
+  </div>
+
+  <div class="alertas-filters">
+    <div class="filter-group">
+      <label for="filter-setor">Todos os Setores</label>
+      <select id="filter-setor">
+        <option value="">Todos os Setores</option>
+        {% for s in setores %}
+        <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filter-nivel">Todos os Níveis</label>
+      <select id="filter-nivel">
+        <option value="">Todos os Níveis</option>
+        <option value="CRÍTICO">Crítico</option>
+        <option value="ALERTA">Alerta</option>
+      </select>
+    </div>
+    <button class="btn-filter">🔍</button>
+  </div>
+
+  <div class="alertas-summary">
+    Total de Alertas
+    <span class="alertas-count">**{{ alertas|length }}**</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table alertas-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Métrica</th>
+          <th>Setor</th>
+          <th>Meta</th>
+          <th>Resultado</th>
+          <th>Atingimento</th>
+          <th>Desvio</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in alertas %}
+        <tr class="alerta-row alerta-{{ a.nivel|lower }}">
+          <td>{{ '🔴' if a.nivel=='CRÍTICO' else '⚠️' }} {{ a.nivel }}</td>
+          <td><strong>{{ a.indicador }}</strong></td>
+          <td>{{ a.setor }}</td>
+          <td>{% if a.meta is not none and a.meta == a.meta %} {{ "{:,.2f}".format(a.meta) }} {% else %}—{% endif %}</td>
+          <td>{% if a.resultado is not none and a.resultado == a.resultado %} {{ "{:,.2f}".format(a.resultado) }} {% else %}—{% endif %}</td>
+          <td class="ating-{{ a.nivel|lower }}">{% if a.atingimento is not none and a.atingimento == a.atingimento %} {{ "%.1f"|format(a.atingimento) }}% {% else %}—{% endif %}</td>
+          <td>{% if a.desvio is not none and a.desvio == a.desvio %} {{ "{:,.2f}".format(a.desvio) }} {% else %}—{% endif %}</td>
+          <td>
+            <a href="{{ url_for('setor', nome=a.setor) }}" class="btn-action">🔍 Detalhes</a>
+            <button class="btn-action" onclick="abrirModalPlano('{{ a.setor }}', '{{ a.indicador }}')">📋 Plano de Ação</button>
+            <button class="btn-action" onclick="abrirModalHistorico('{{ a.setor }}', '{{ a.indicador }}')">🕐 Histórico</button>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not alertas %}
+        <tr>
+          <td colspan="8" class="empty-state">✅ Nenhum alerta para <strong>{{ mes_ref }}</strong>.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="ranking-section">
+  <h2 class="ranking-title">🏅 Ranking de Setores — Média Geral de Atingimento</h2>
+  <div class="ranking-grid">
+    {% for item in ranking %}
+    <a href="{{ url_for('setor', nome=item.setor) }}" class="ranking-card borda-{{ item.classe }}">
+      <span class="ranking-pos">{{ loop.index }}º</span>
+      <span class="ranking-setor">{{ item.setor }}</span>
+      <span class="ranking-media ating-{{ item.classe }}">{{ "%.1f"|format(item.media) }}%</span>
+    </a>
+    {% endfor %}
+    {% if not ranking %}
+    <div class="empty-state" style="grid-column: 1 / -1;">
+      <span class="empty-state-icon">📊</span>
+      <p class="empty-state-text">Nenhum dado disponível para ranking.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MODAL NOVO PLANO DE AÇÃO -->
+<div class="modal-overlay" id="modalNovoPlano">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">📋 Novo Plano de Ação</h3>
+      <button class="modal-close" onclick="fecharModal('modalNovoPlano')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formNovoPlano">
+        <div class="form-group">
+          <label for="planoSetor">Setor / Indicador</label>
+          <input type="text" id="planoSetor" name="setor" readonly>
+        </div>
+        <div class="form-group">
+          <label for="planoDescricao">Descrição *</label>
+          <textarea id="planoDescricao" name="descricao" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="planoResponsavel">Responsável *</label>
+          <input type="text" id="planoResponsavel" name="responsavel" required>
+        </div>
+        <div class="form-group">
+          <label for="planoPrazo">Prazo</label>
+          <input type="date" id="planoPrazo" name="prazo">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="fecharModal('modalNovoPlano')">Cancelar</button>
+          <button type="submit" class="btn-primary">💾 Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HISTÓRICO DE PLANOS DE AÇÃO -->
+<div class="modal-overlay" id="modalHistoricoPlanos">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">🕐 Histórico de Planos de Ação</h3>
+      <button class="modal-close" onclick="fecharModal('modalHistoricoPlanos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="historicoPlanosContent">
+        <p>Carregando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Funções para Modais (Plano de Ação e Histórico)
+  function abrirModalPlano(setor, indicador) {
+    document.getElementById('planoSetor').value = `${setor} / ${indicador}`;
+    document.getElementById('modalNovoPlano').classList.add('open');
+  }
+
+  function fecharModal(id) {
+    document.getElementById(id).classList.remove('open');
+    if (id === 'modalNovoPlano') {
+      document.getElementById('formNovoPlano').reset();
+    }
+  }
+
+  document.getElementById('formNovoPlano').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = {
+      setor: formData.get('setor'),
+      indicador: formData.get('setor').split(' / ')[1], // Extrai o indicador
+      descricao: formData.get('descricao'),
+      responsavel: formData.get('responsavel'),
+      prazo: formData.get('prazo')
+    };
+
+    try {
+      const response = await fetch('/api/planos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.ok) {
+        alert('Plano de ação cadastrado com sucesso!');
+        fecharModal('modalNovoPlano');
+        // Opcional: recarregar a página ou atualizar a lista de alertas
+      } else {
+        alert('Erro ao cadastrar plano de ação.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro de comunicação com o servidor.');
+    }
+  });
+
+  async function abrirModalHistorico(setor, indicador) {
+    const contentDiv = document.getElementById('historicoPlanosContent');
+    contentDiv.innerHTML = '<p>Carregando...</p>';
+    document.getElementById('modalHistoricoPlanos').classList.add('open');
+
+    try {
+      const response = await fetch('/api/planos');
+      const planos = await response.json();
+
+      const planosFiltrados = planos.filter(p => p.setor === setor && p.indicador === indicador);
+
+      if (planosFiltrados.length > 0) {
+        contentDiv.innerHTML = `
+          <h4 style="color:var(--text-primary); margin-bottom:15px;">Planos para ${setor} / ${indicador}</h4>
+          <div class="historico-list">
+            ${planosFiltrados.map(p => `
+              <div class="historico-item">
+                <div class="historico-header">
+                  <strong>${p.descricao}</strong>
+                  <span class="historico-status historico-status-${p.status.toLowerCase()}">${p.status}</span>
+                </div>
+                <div class="historico-details">
+                  <span>Responsável: ${p.responsavel}</span>
+                  <span>Prazo: ${p.prazo || 'Não definido'}</span>
+                  <span>Criado em: ${p.criado_em}</span>
+                </div>
+                <button class="btn-delete" onclick="deletarPlano(${p.id})">Excluir</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        contentDiv.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-state-icon">📋</span>
+            <p class="empty-state-text">Nenhum plano de ação encontrado para ${setor} / ${indicador}.</p>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+      contentDiv.innerHTML = '<p style="color:var(--red-color);">Erro ao carregar histórico de planos.</p>';
+    }
+  }
+
+  async function deletarPlano(planoId) {
+    if (!confirm('Tem certeza que deseja excluir este plano de ação?')) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/planos/${planoId}`, {
+        method: 'DELETE'
+      });
+      const result = await response.json();
+      if (result.ok) {
+        alert('Plano de ação excluído com sucesso!');
+        // Recarregar o histórico após a exclusão
+        const modal = document.getElementById('modalHistoricoPlanos');
+        const setorIndicador = modal.querySelector('h4').textContent.replace('Planos para ', '').trim();
+        const [setor, indicador] = setorIndicador.split(' / ');
+        abrirModalHistorico(setor, indicador);
+      } else {
+        alert('Erro ao excluir plano de ação.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro de comunicação com o servidor.');
+    }
+  }
+
+  // Fechar modais com ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal-overlay.open');
+      modals.forEach(modal => modal.classList.remove('open'));
+    }
+  });
+
+  // Fechar modais clicando fora
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+      }
+    });
+  });
+</script>
+
+<!-- Modal PNR KPI -->
+<div class="modal-overlay" id="pnrKpiModalOverlay">
+  <div class="modal-grafico-full" id="pnrKpiModal">
+    <div class="modal-header">
+      <h5 class="modal-title" id="pnrKpiModalLabel">Análise KPI</h5>
+      <button type="button" class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="card-body-row">
+        <!-- Coluna esquerda: gráfico -->
+        <div class="grafico-ind-wrapper" style="flex: 1;">
+          <canvas id="pnrKpiChart" style="width: 100%; height: 300px;"></canvas>
+        </div>
+        <!-- Coluna direita: análise YTD -->
+        <div class="ytd-col" id="pnrKpiYtdInfo" style="border-right: none; border-left: 1px solid var(--border-color);">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js (coloque antes do fechamento de </body>, se não estiver no base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Referência global para o gráfico, para podermos destruir/recriar
+let pnrKpiChartInstance = null;
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pnrRows = document.querySelectorAll('.pnr-row');
+  const pnrKpiModalOverlay = document.getElementById('pnrKpiModalOverlay');
+  const closeBtn = pnrKpiModalOverlay.querySelector('.modal-close');
+
+  pnrRows.forEach(row => {
+    row.addEventListener('click', async function () {
+      const kpiNum = this.dataset.kpiNum;
+      const kpiNome = this.dataset.kpiNome;
+
+      if (!kpiNum) {
+        console.error('KPI number not found for this row.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/pnr/kpi/${kpiNum}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (data.error) {
+          alert('Erro ao carregar dados para este KPI: ' + data.error);
+          return;
+        }
+
+        document.getElementById('pnrKpiModalLabel').textContent =
+          `Análise KPI: ${data.kpi_nome}`;
+
+        renderPnrKpiChart(data);
+        renderPnrKpiYtdInfo(data);
+
+        pnrKpiModalOverlay.classList.add('open');
+      } catch (e) {
+        console.error(e);
+        alert('Erro ao carregar dados do KPI.');
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', () => pnrKpiModalOverlay.classList.remove('open'));
+  pnrKpiModalOverlay.addEventListener('click', e => {
+    if (e.target === pnrKpiModalOverlay) pnrKpiModalOverlay.classList.remove('open');
+  });
+});
+
+function renderPnrKpiChart(data) {
+  const ctx = document.getElementById('pnrKpiChart').getContext('2d');
+  if (pnrKpiChartInstance) pnrKpiChartInstance.destroy();
+
+  pnrKpiChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.ytd_labels, // Usará "YTD" por enquanto
+      datasets: [
+        {
+          label: data.ytd_label_meta || 'Meta',
+          data: data.ytd_meta,
+          backgroundColor: 'rgba(88,166,255,0.6)', // Azul
+          borderColor: 'rgba(88,166,255,1)',
+          borderWidth: 1
+        },
+        {
+          label: data.ytd_label_real || 'Real',
+          data: data.ytd_real,
+          backgroundColor: 'rgba(63,185,80,0.6)', // Verde
+          borderColor: 'rgba(63,185,80,1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: 'var(--text-primary)' } },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(ctx) {
+              let label = ctx.dataset.label || '';
+              if (label) label += ': ';
+              if (ctx.parsed.y != null) {
+                label += ctx.parsed.y.toLocaleString(
+                  'pt-BR',
+                  { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+                );
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: 'var(--text-secondary)' },
+          grid:  { color: 'rgba(255,255,255,.06)' }
+        },
+        y: {
+          ticks: { color: 'var(--text-secondary)' },
+          grid:  { color: 'rgba(255,255,255,.06)' }
+        }
+      }
+    }
+  });
+}
+
+function renderPnrKpiYtdInfo(data) {
+  const c = document.getElementById('pnrKpiYtdInfo');
+  const meta = data.meta_ytd ?? 0;
+  const real = data.real_ytd ?? 0;
+  const ating = data.ating ?? null;
+
+  const diff = real - meta;
+  let diffClass = '';
+  if (diff > 0) diffClass = 'ating-green';
+  else if (diff < 0) diffClass = 'ating-red';
+
+  let atingClass = 'ating-neutral';
+  if (ating != null) {
+    if (ating >= 95) atingClass = 'ating-green';
+    else if (ating >= 80) atingClass = 'ating-yellow';
+    else atingClass = 'ating-red';
+  }
+
+  c.innerHTML = `
+    <div class="ytd-detalhe">
+      <span class="ytd-titulo">YTD</span>
+      <span class="ytd-numero ${atingClass}">
+        ${ating != null ? ating.toFixed(1) + '%' : '—'}
+      </span>
+    </div>
+    <div class="ytd-detalhe">
+      <span class="ytd-detalhe-label">${data.ytd_label_meta || 'Meta'}</span>
+      <span class="ytd-detalhe-val">
+        ${meta.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}
+      </span>
+    </div>
+    <div class="ytd-detalhe">
+      <span class="ytd-detalhe-label">${data.ytd_label_real || 'Real'}</span>
+      <span class="ytd-detalhe-val">
+        ${real.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}
+      </span>
+    </div>
+    <div class="ytd-detalhe">
+      <span class="ytd-detalhe-label">Dif.</span>
+      <span class="ytd-detalhe-val ${diffClass}">
+        ${diff.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}
+      </span>
+    </div>
+  `;
+}
+</script>
+
+{% endblock %}

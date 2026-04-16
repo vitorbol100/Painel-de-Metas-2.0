@@ -1,0 +1,1325 @@
+/* ════════════════════════════════════════
+   VARIÁVEIS GLOBAIS
+   Define um conjunto de variáveis CSS para cores e fontes,
+   facilitando a manutenção e padronização do tema.
+════════════════════════════════════════ */
+:root {
+  --bg-primary:    #0d1117;        /* Cor de fundo principal (escuro) */
+  --bg-secondary:  #161b22;        /* Cor de fundo secundária (um pouco mais claro que o primário) */
+  --border-color:  #30363d;        /* Cor para bordas e divisores */
+  --text-primary:  #e6edf3;        /* Cor principal para textos (claro) */
+  --text-secondary:#8b949e;        /* Cor secundária para textos */
+  --text-sub:      #7d8590;        /* Cor para textos de subtítulos e descrições */
+
+  --green-color:   #3fb950;        /* Verde para sucesso/atingimento alto */
+  --yellow-color:  #d29922;        /* Amarelo para atenção/atingimento médio */
+  --red-color:     #f85149;        /* Vermelho para crítico/atingimento baixo */
+  --blue-color:    #58a6ff;        /* Azul para links e elementos interativos */
+  --neutral-color: #484f58;        /* Cor neutra para elementos diversos */
+}
+
+/* ════════════════════════════════════════
+   BASE GERAL
+   Estilos básicos para o corpo da página, links e o layout principal
+   com sidebar e conteúdo.
+════════════════════════════════════════ */
+body {
+  margin:        0;
+  font-family:   "Inter", "Segoe UI", sans-serif; /* Fonte principal */
+  background-color: var(--bg-primary);
+  color:         var(--text-secondary);
+  line-height:   1.5;
+  -webkit-font-smoothing: antialiased; /* Suavização de fonte para WebKit */
+  -moz-osx-font-smoothing: grayscale; /* Suavização de fonte para Firefox */
+}
+
+* {
+  box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura/altura */
+}
+
+a {
+  text-decoration: none; /* Remove sublinhado padrão de links */
+  color: var(--blue-color);
+}
+
+a:hover {
+  text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+}
+
+/* Layout principal com sidebar */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr; /* Sidebar com largura fixa, conteúdo flexível */
+  min-height: 100vh; /* Altura mínima de 100% da viewport */
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-logo svg {
+  color: var(--blue-color);
+}
+
+.sidebar-nav-section {
+  margin-bottom: 25px;
+}
+
+.sidebar-nav-title {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+}
+
+.sidebar-nav-list {
+  list-style: none; /* Remove marcadores de lista */
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease; /* Transição suave */
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.nav-item svg {
+  margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+}
+
+.page-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+/* ════════════════════════════════════════
+   HOME — Hero
+   Estilos para a seção de cabeçalho da página inicial (com os 4 botões).
+════════════════════════════════════════ */
+.home-hero {
+  margin-bottom: 40px;
+  padding:       32px 0 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.home-hero-inner {
+  display:     flex;
+  align-items: center;
+}
+
+.home-logo-area {
+  display:     flex;
+  align-items: center;
+  gap:         16px;
+}
+
+.home-logo-icon {
+  font-size:   2.8rem;
+  line-height: 1;
+}
+
+.home-hero-title {
+  margin:      0;
+  font-size:   1.8rem;
+  font-weight: 700;
+  color:       var(--text-primary);
+  line-height: 1.2;
+}
+
+.home-hero-sub {
+  margin:    4px 0 0;
+  font-size: .85rem;
+  color:     var(--text-sub);
+}
+
+/* ════════════════════════════════════════
+   HOME — Grid de Painéis
+   Estilos para o grid de cartões de seleção de painéis na página inicial.
+════════════════════════════════════════ */
+.home-paineis-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap:                   20px;
+}
+
+.painel-card {
+  display:        flex;
+  align-items:    center;
+  gap:            18px;
+  background:     var(--bg-secondary);
+  border:         1px solid var(--border-color);
+  border-left:    4px solid var(--border-color);
+  border-radius:  12px;
+  padding:        24px 20px;
+  text-decoration: none;
+  color:          inherit;
+  transition:     transform .18s ease,
+                  box-shadow .18s ease,
+                  border-left-color .18s ease;
+  cursor:         pointer;
+  position:       relative;
+  overflow:       hidden;
+}
+
+.painel-card::before {
+  content:    "";
+  position:   absolute;
+  inset:      0;
+  background: linear-gradient(
+                135deg,
+                rgba(255,255,255,.03) 0%,
+                transparent 60%
+              );
+  pointer-events: none;
+}
+
+.painel-card:hover {
+  transform:  translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,.5);
+}
+
+/* Cores por painel */
+.painel-revenda {
+  border-left-color: var(--green-color);
+}
+.painel-revenda:hover {
+  border-left-color: #56d364;
+  box-shadow: 0 8px 30px rgba(63,185,80,.18);
+}
+
+.painel-area {
+  border-left-color: var(--blue-color);
+}
+.painel-area:hover {
+  border-left-color: #79c0ff;
+  box-shadow: 0 8px 30px rgba(88,166,255,.18);
+}
+
+.painel-setores {
+  border-left-color: var(--yellow-color);
+}
+.painel-setores:hover {
+  border-left-color: #e3b341;
+  box-shadow: 0 8px 30px rgba(210,153,34,.18);
+}
+
+.painel-individual {
+  border-left-color: #bc8cff;
+}
+.painel-individual:hover {
+  border-left-color: #d2a8ff;
+  box-shadow: 0 8px 30px rgba(188,140,255,.18);
+}
+
+/* Ícone */
+.painel-card-icon {
+  font-size:  2.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Corpo do texto */
+.painel-card-body {
+  flex: 1;
+}
+
+.painel-card-titulo {
+  font-size:   .72rem;
+  font-weight: 500;
+  color:       var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 2px;
+}
+
+.painel-card-sub {
+  font-size:   1.15rem;
+  font-weight: 700;
+  color:       var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.painel-card-desc {
+  font-size:   .78rem;
+  color:       var(--text-sub);
+  line-height: 1.5;
+}
+
+/* Seta */
+.painel-card-arrow {
+  font-size:   1.3rem;
+  color:       var(--neutral-color);
+  flex-shrink: 0;
+  transition:  color .18s, transform .18s;
+}
+
+.painel-card:hover .painel-card-arrow {
+  color:     var(--text-primary);
+  transform: translateX(4px);
+}
+
+/* ════════════════════════════════════════
+   METAS REVENDA — Seção PEX
+   Estilos para a estrutura principal do painel de revenda (SDPO, DPO, PNR).
+════════════════════════════════════════ */
+.pex-section {
+  margin-bottom: 40px;
+}
+
+.pex-title {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.pex-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-bottom: 25px;
+}
+
+.pex-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* SDPO/DPO (esquerda) e PNR (direita) */
+  gap: 20px;
+  align-items: start; /* Alinha os itens ao topo */
+}
+
+.pex-left-col, .pex-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-pex {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-pex-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que os trimestres quebrem linha */
+  gap: 10px;
+}
+
+.card-pex-title {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.card-pex-body {
+  padding: 20px;
+}
+
+.card-pex-sub-title {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* Pontos de Trimestre (Q1, Q2, Q3, Q4) */
+.trimestres-pontos {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.trimestre-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.trimestre-label {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trimestre-valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue-color); /* Cor de destaque para os pontos */
+}
+
+.trimestre-unidade {
+  font-size: 0.65rem;
+  color: var(--text-sub);
+}
+
+/* Tabelas (SDPO, DPO, PNR) */
+.table-responsive {
+  overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  white-space: nowrap; /* Impede que o texto quebre linha nas células */
+}
+
+.data-table th, .data-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+  color: var(--text-secondary);
+}
+
+.data-table th {
+  background-color: rgba(255,255,255,.03);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.data-table tbody tr:hover {
+  background-color: rgba(255,255,255,.02);
+}
+
+.data-table td.ating-green { color: var(--green-color); }
+.data-table td.ating-yellow { color: var(--yellow-color); }
+.data-table td.ating-red { color: var(--red-color); }
+.data-table td.ating-blue { color: var(--blue-color); }
+
+.spo-selo {
+  height: 18px; /* Tamanho do selo SPO */
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* PNR Table specific styles */
+.pnr-table th, .pnr-table td {
+  vertical-align: middle;
+}
+
+.pnr-section-header {
+  background-color: rgba(255,255,255,.05);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pnr-section-header td {
+  padding: 12px 12px;
+}
+
+.pnr-section-pts {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  font-weight: normal;
+  margin-left: 5px;
+}
+
+.pnr-total-row {
+  background-color: rgba(88,166,255,.1);
+  font-weight: 700;
+  color: var(--blue-color);
+}
+
+/* ════════════════════════════════════════
+   METAS REVENDA — Seção de Alertas
+   Estilos para a tabela de alertas de metas não atingidas.
+════════════════════════════════════════ */
+.alertas-section {
+  margin-bottom: 40px;
+}
+
+.alertas-header {
+  margin-bottom: 20px;
+}
+
+.alertas-title {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.alertas-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+.alertas-filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-bottom: 5px;
+}
+
+.filter-group select {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  appearance: none; /* Remove estilo padrão do select */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+}
+
+.btn-filter {
+  background-color: var(--blue-color);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  align-self: flex-end; /* Alinha o botão com os selects */
+}
+
+.btn-filter:hover {
+  background-color: #6cb6ff;
+}
+
+.alertas-summary {
+  background-color: rgba(248,81,73,.1); /* Fundo vermelho claro para o resumo */
+  border: 1px solid rgba(248,81,73,.3);
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: inline-flex; /* Para que o fundo se ajuste ao conteúdo */
+  align-items: center;
+  gap: 8px;
+}
+
+.alertas-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--red-color);
+}
+
+.alertas-table .alerta-row.alerta-crítico {
+  background-color: rgba(248,81,73,.05);
+  border-left: 3px solid var(--red-color);
+}
+
+.alertas-table .alerta-row.alerta-alerta {
+  background-color: rgba(210,153,34,.05);
+  border-left: 3px solid var(--yellow-color);
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  color: var(--blue-color);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-right: 10px;
+  padding: 0;
+}
+
+.btn-action:hover {
+  color: #6cb6ff;
+}
+
+/* ════════════════════════════════════════
+   METAS REVENDA — Seção de Ranking
+   Estilos para o ranking de setores.
+════════════════════════════════════════ */
+.ranking-section {
+  margin-bottom: 40px;
+}
+
+.ranking-title {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 25px;
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.ranking-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--border-color);
+  border-radius: 10px;
+  padding: 15px 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.ranking-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+.ranking-pos {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-bottom: 5px;
+}
+
+.ranking-setor {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.ranking-media {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* ════════════════════════════════════════
+   MODAIS GERAIS (Plano de Ação, Histórico)
+   Estilos para os modais de planos de ação e histórico.
+════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(3px);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.8);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn .2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity:0; transform:scale(.96); }
+  to   { opacity:1; transform:scale(1);   }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s;
+}
+
+.btn-primary {
+  background-color: var(--blue-color);
+  color: #fff;
+  border: 1px solid var(--blue-color);
+}
+
+.btn-primary:hover {
+  background-color: #6cb6ff;
+  border-color: #6cb6ff;
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: #2d333b;
+  border-color: #484f58;
+}
+
+.historico-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historico-item {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  position: relative;
+}
+
+.historico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.historico-header strong {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.historico-status {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.historico-status-aberto { background-color: rgba(88,166,255,.2); color: var(--blue-color); }
+.historico-status-concluido { background-color: rgba(63,185,80,.2); color: var(--green-color); }
+.historico-status-cancelado { background-color: rgba(248,81,73,.2); color: var(--red-color); }
+
+.historico-details span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: var(--red-color);
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-delete:hover {
+  color: #ff7b72;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-sub);
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.empty-state-text {
+  font-size: 0.9rem;
+}
+
+/* ════════════════════════════════════════
+   SETOR — Resumo topo
+   Estilos para o card de média geral do setor no topo da página de setor.
+════════════════════════════════════════ */
+.setor-resumo {
+  margin-bottom:   20px;
+  display:         flex;
+  justify-content: flex-end; /* Alinha o card à direita */
+}
+
+.setor-media-card {
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-color);
+  border-left:   3px solid var(--border-color); /* Borda colorida à esquerda */
+  border-radius: 10px;
+  padding:       14px 22px;
+  text-align:    center;
+  min-width:     200px;
+}
+
+.setor-media-label {
+  font-size:      .72rem;
+  color:          var(--text-sub);
+  margin-bottom:  6px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.setor-media-valor {
+  font-size:     2rem;
+  font-weight:   700;
+  margin-bottom: 10px;
+}
+
+.setor-legenda {
+  display:         flex;
+  flex-wrap:       wrap;
+  gap:             6px;
+  justify-content: center;
+}
+
+.leg-item {
+  font-size:     .7rem;
+  padding:       2px 8px;
+  border-radius: 20px;
+  border:        1px solid transparent;
+}
+
+.leg-green  { color:var(--green-color); border-color:rgba(63,185,80,.3); }
+.leg-yellow { color:var(--yellow-color); border-color:rgba(210,153,34,.3); }
+.leg-red    { color:var(--red-color); border-color:rgba(248,81,73,.3); }
+
+/* ════════════════════════════════════════
+   SETOR — Grid de Cards de Indicadores
+   Estilos para o grid que contém os cards de cada indicador.
+════════════════════════════════════════ */
+.setor-graficos-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); /* Colunas responsivas */
+  gap:                   16px;
+}
+
+.card-indicador {
+  background:    var(--bg-secondary);
+  border:        1px solid var(--border-color);
+  border-radius: 10px;
+  overflow:      hidden;
+  border-left:   3px solid var(--border-color); /* Borda colorida à esquerda */
+  transition:    box-shadow .2s;
+}
+
+.card-indicador:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+
+/* Cores da borda do card do indicador */
+.borda-green  { border-left-color: var(--green-color); }
+.borda-yellow { border-left-color: var(--yellow-color); }
+.borda-red    { border-left-color: var(--red-color); }
+.borda-neutral{ border-left-color: var(--neutral-color); }
+.borda-blue   { border-left-color: var(--blue-color); }
+
+.card-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         10px 14px;
+  border-bottom:   1px solid var(--border-color);
+}
+
+.card-titulo {
+  font-size:   .85rem;
+  font-weight: 600;
+  color:       var(--text-primary);
+}
+
+.pex-badge {
+  font-size: .75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background-color: rgba(255,255,255,.1);
+  color: var(--text-primary);
+}
+
+/* Cores do badge de atingimento */
+.pex-green { background-color: rgba(63,185,80,.2); color: var(--green-color); }
+.pex-yellow { background-color: rgba(210,153,34,.2); color: var(--yellow-color); }
+.pex-red { background-color: rgba(248,81,73,.2); color: var(--red-color); }
+.pex-neutral { background-color: rgba(72,79,88,.2); color: var(--neutral-color); }
+
+
+/* ════════════════════════════════════════
+   SETOR — Corpo do card (YTD + Gráfico)
+   Layout flexível para a coluna YTD e o gráfico dentro do card.
+════════════════════════════════════════ */
+.card-body-row {
+  display:     flex;
+  align-items: stretch; /* Garante que as colunas tenham a mesma altura */
+}
+
+/* ── Coluna YTD (esquerda) ── */
+.ytd-col {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: flex-start; /* Alinha o conteúdo ao topo */
+  width:           82px;
+  min-width:       82px;
+  padding:         10px 6px 12px;
+  border-right:    1px solid var(--border-color);
+  background:      rgba(255,255,255,.018);
+  gap:             4px; /* Espaçamento entre os elementos internos */
+}
+
+.ytd-titulo {
+  font-size:      .6rem;
+  color:          var(--neutral-color);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom:  2px;
+}
+
+.ytd-numero {
+  font-size:   1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ytd-detalhe {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  line-height:    1.2;
+}
+
+.ytd-detalhe-label {
+  font-size: .55rem;
+  color:     var(--neutral-color);
+}
+
+.ytd-detalhe-val {
+  font-size:   .68rem;
+  color:       var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Barra de progresso vertical */
+.ytd-progress-wrap {
+  width:         10px;
+  height:        80px;
+  background:    rgba(255,255,255,.06);
+  border-radius: 6px;
+  overflow:      hidden;
+  display:       flex;
+  align-items:   flex-end; /* A barra "sobe" de baixo para cima */
+  margin-top:    8px;
+}
+
+.ytd-progress-fill {
+  width:         100%;
+  border-radius: 6px;
+  transition:    height .5s ease; /* Animação suave da altura */
+  min-height:    2px; /* Garante que a barra seja visível mesmo com 0% */
+  opacity:       .85;
+}
+
+/* ── Coluna Gráfico (direita) ── */
+.grafico-ind-wrapper {
+  position:  relative;
+  cursor:    pointer;
+  flex:      1 1 0; /* Ocupa o espaço restante */
+  min-width: 0; /* Permite que o flex item encolha */
+  padding:   4px 0 0;
+}
+
+.grafico-ind-wrapper:hover .grafico-expand-hint {
+  opacity: 1; /* Mostra a dica ao passar o mouse */
+}
+
+.grafico-expand-hint {
+  position:       absolute;
+  top:            6px;
+  right:          8px;
+  font-size:      .65rem;
+  color:          var(--text-sub);
+  opacity:        0; /* Escondido por padrão */
+  transition:     opacity .2s;
+  z-index:        2;
+  pointer-events: none; /* Não interfere com cliques no gráfico */
+  background:     rgba(13,17,23,.75);
+  padding:        2px 6px;
+  border-radius:  4px;
+}
+
+.grafico-ind {
+  width:  100%;
+  height: 200px; /* Altura fixa para o mini-gráfico */
+}
+
+/* ════════════════════════════════════════
+   MODAL — Gráfico Fullscreen
+   Estilos para o modal que exibe o gráfico ampliado.
+════════════════════════════════════════ */
+.modal-overlay {
+  position:        fixed;
+  inset:           0; /* Ocupa toda a tela */
+  background:      rgba(0,0,0,.7); /* Fundo escuro semi-transparente */
+  display:         none; /* Escondido por padrão */
+  align-items:     center;
+  justify-content: center;
+  z-index:         999; /* Garante que fique acima de outros elementos */
+  backdrop-filter: blur(3px); /* Efeito de desfoque no fundo */
+}
+
+.modal-overlay.open { display: flex; } /* Mostra o modal quando a classe 'open' é adicionada */
+
+.modal-grafico-full {
+  background:     var(--bg-primary);
+  border:         1px solid var(--border-color);
+  border-radius:  12px;
+  box-shadow:     0 24px 80px rgba(0,0,0,.8);
+  width:          92%;
+  max-width:      1300px;
+  max-height:     90vh;
+  display:        flex;
+  flex-direction: column;
+  animation:      modalIn .2s ease; /* Animação de entrada */
+}
+
+@keyframes modalIn {
+  from { opacity:0; transform:scale(.96); }
+  to   { opacity:1; transform:scale(1);   }
+}
+
+.modal-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         12px 18px;
+  border-bottom:   1px solid var(--border-color);
+  flex-shrink:     0; /* Impede que o cabeçalho encolha */
+}
+
+.modal-close {
+  background:    transparent;
+  border:        none;
+  color:         var(--text-sub);
+  font-size:     1.2rem;
+  cursor:        pointer;
+  padding:       4px 8px;
+  border-radius: 4px;
+  transition:    color .15s, background .15s;
+}
+
+.modal-close:hover {
+  color:      var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+/* ════════════════════════════════════════
+   METAS SETORES — Grid de Setores
+   Estilos para o grid de cartões de setores na página de Metas por Setores.
+════════════════════════════════════════ */
+.setores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Colunas responsivas */
+  gap: 20px;
+}
+
+.setor-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--border-color); /* Borda colorida à esquerda */
+  border-radius: 10px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.setor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+.setor-card-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.setor-card-body {
+  flex-grow: 1;
+}
+
+.setor-card-nome {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.setor-card-media {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+.setor-card-label {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.setor-card-bar-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: rgba(255,255,255,.05);
+}
+
+.setor-card-bar-fill {
+  height: 100%;
+  transition: width .5s ease;
+}
+
+/* ════════════════════════════════════════
+   EM CONSTRUÇÃO
+   Estilos para as páginas de placeholder "em construção".
+════════════════════════════════════════ */
+.em-construcao {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  padding:         80px 20px;
+  gap:             16px;
+  text-align:      center;
+}
+
+.em-construcao-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.em-construcao-texto {
+  font-size: 1rem;
+  color:     var(--text-sub);
+}
+
+.btn-voltar {
+  margin-top:     8px;
+  padding:        10px 22px;
+  background:     var(--bg-secondary);
+  border:         1px solid var(--border-color);
+  border-radius:  8px;
+  color:          var(--text-primary);
+  text-decoration: none;
+  font-size:      .85rem;
+  transition:     background .15s, border-color .15s;
+}
+
+.btn-voltar:hover {
+  background:   #2d333b;
+  border-color: #484f58;
+}
+
+/* Deixar o card do SPO um pouco mais “azulado” como no print */
+.card-pex .card-pex-header {
+  background: linear-gradient(90deg, #111726, #161b22);
+}
+
+.data-table thead tr:first-child th {
+  background-color: #111726;
+}
+
+.data-table thead tr:nth-child(2) th {
+  background-color: #161b22;
+}
+
+/* Badge de atingimento (SPO / outros) */
+.badge-ating {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px; /* Largura mínima para manter o formato */
+  padding: 3px 10px;
+  border-radius: 16px; /* Formato oval */
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary); /* Texto branco/claro */
+  transition: background-color 0.15s ease;
+}
+
+/* Cores de fundo para os badges */
+.badge-ating.ating-green {
+  background-color: var(--green-color);
+  color: var(--bg-primary); /* Texto escuro no badge verde */
+}
+.badge-ating.ating-yellow {
+  background-color: var(--yellow-color);
+  color: var(--bg-primary); /* Texto escuro no badge amarelo */
+}
+.badge-ating.ating-red {
+  background-color: var(--red-color);
+  color: var(--bg-primary); /* Texto escuro no badge vermelho */
+}
+.badge-ating.ating-blue {
+  background-color: var(--blue-color);
+  color: var(--bg-primary); /* Texto escuro no badge azul */
+}
+.badge-ating.ating-neutral {
+  background-color: var(--neutral-color);
+  color: var(--text-primary);
+}
+
+/* Ajuste para o selo SPO ficar ao lado do badge */
+.spo-selo {
+  height: 18px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* ════════════════════════════════════════
+   CORES DE ATINGIMENTO (reutilizadas)
+   Classes utilitárias para aplicar cores baseadas no nível de atingimento.
+════════════════════════════════════════ */
+.ating-green  { color: var(--green-color); }
+.ating-yellow { color: var(--yellow-color); }
+.ating-red    { color: var(--red-color); }
+.ating-neutral{ color: var(--neutral-color); }
+.ating-blue   { color: var(--blue-color); }

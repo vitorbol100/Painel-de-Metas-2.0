@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="home-hero">
+  <div class="home-hero-inner">
+    <div class="home-logo-area">
+      <span class="home-logo-icon">📊</span>
+      <div>
+        <h1 class="home-hero-title">Painéis de Metas</h1>
+        <p class="home-hero-sub">Selecione o painel que deseja visualizar</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="home-paineis-grid">
+  <a href="{{ url_for('painel_revenda') }}" class="painel-card painel-revenda">
+    <span class="painel-card-icon">📈</span>
+    <div class="painel-card-body">
+      <div class="painel-card-titulo">Painel Principal</div>
+      <div class="painel-card-sub">Metas Revenda</div>
+      <div class="painel-card-desc">Visão geral de PEX, SPO, PNR, alertas e ranking.</div>
+    </div>
+    <span class="painel-card-arrow">→</span>
+  </a>
+
+  <a href="{{ url_for('painel_area') }}" class="painel-card painel-area">
+    <span class="painel-card-icon">🏢</span>
+    <div class="painel-card-body">
+      <div class="painel-card-titulo">Painel Secundário</div>
+      <div class="painel-card-sub">Metas por Área</div>
+      <div class="painel-card-desc">Acompanhamento de indicadores por área específica.</div>
+    </div>
+    <span class="painel-card-arrow">→</span>
+  </a>
+
+  <a href="{{ url_for('painel_setores') }}" class="painel-card painel-setores">
+    <span class="painel-card-icon">📁</span>
+    <div class="painel-card-body">
+      <div class="painel-card-titulo">Painel Secundário</div>
+      <div class="painel-card-sub">Metas por Setores</div>
+      <div class="painel-card-desc">Detalhes e ranking de desempenho de cada setor.</div>
+    </div>
+    <span class="painel-card-arrow">→</span>
+  </a>
+
+  <a href="{{ url_for('painel_individual') }}" class="painel-card painel-individual">
+    <span class="painel-card-icon">👤</span>
+    <div class="painel-card-body">
+      <div class="painel-card-titulo">Painel Secundário</div>
+      <div class="painel-card-sub">Metas Individual</div>
+      <div class="painel-card-desc">Acompanhamento de metas por colaborador.</div>
+    </div>
+    <span class="painel-card-arrow">→</span>
+  </a>
+</div>
+
+{% endblock %}

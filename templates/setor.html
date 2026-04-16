@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">📁 {{ setor }}</h1>
+  <p class="page-subtitle">Acompanhamento mensal de indicadores</p>
+</div>
+
+<!-- MÉDIA GERAL DO SETOR -->
+<div class="setor-resumo">
+  <div class="setor-media-card borda-{{ classe_setor }}">
+    <div class="setor-media-label">Média Geral do Setor</div>
+    <div class="setor-media-valor ating-{{ classe_setor }}">
+      {% if media_setor is not none %}
+        {{ "%.1f"|format(media_setor) }}%
+      {% else %}—{% endif %}
+    </div>
+    <div class="setor-legenda">
+      <span class="leg-item leg-green">≥ 95% — No alvo</span>
+      <span class="leg-item leg-yellow">80–94% — Atenção</span>
+      <span class="leg-item leg-red">< 80% — Crítico</span>
+    </div>
+  </div>
+</div>
+
+<!-- GRID DE CARDS DE INDICADORES -->
+<div class="setor-graficos-grid">
+  {% for ind in indicadores %}
+  {% set idx  = loop.index %}
+  {% set meta = metadados[ind] %}
+
+  <div class="card-indicador borda-{{ meta.classe }}">
+
+    <!-- Cabeçalho do Card -->
+    <div class="card-header">
+      <span class="card-titulo">{{ ind }}</span>
+      {% if meta.atingimento is not none %}
+      <span class="pex-badge pex-{{ meta.classe }}">
+        {{ "%.1f"|format(meta.atingimento) }}%
+      </span>
+      {% else %}
+      <span class="pex-badge pex-neutral">—</span>
+      {% endif %}
+    </div>
+
+    <!-- Corpo do Card: YTD e Gráfico -->
+    <div class="card-body-row">
+
+      <!-- Coluna YTD (esquerda) -->
+      <div class="ytd-col">
+        <div class="ytd-titulo">YTD</div>
+
+        {% if meta.pct_ytd is not none %}
+        <div class="ytd-numero" style="color:{{ meta.cor_ytd }}">
+          {{ "%.1f"|format(meta.pct_ytd) }}%
+        </div>
+
+        <div class="ytd-detalhe">
+          <span class="ytd-detalhe-label">Meta</span>
+          <span class="ytd-detalhe-val">
+            {% if meta.meta_ytd is not none %}
+              {% if meta.meta_ytd >= 1000000 %}
+                {{ "%.1fM"|format(meta.meta_ytd / 1000000) }}
+              {% elif meta.meta_ytd >= 1000 %}
+                {{ "%.1fk"|format(meta.meta_ytd / 1000) }}
+              {% else %}
+                {{ "{:,.0f}".format(meta.meta_ytd) }}
+              {% endif %}
+            {% else %}—{% endif %}
+          </span>
+        </div>
+
+        <div class="ytd-detalhe">
+          <span class="ytd-detalhe-label">Real</span>
+          <span class="ytd-detalhe-val">
+            {% if meta.real_ytd is not none %}
+              {% if meta.real_ytd >= 1000000 %}
+                {{ "%.1fM"|format(meta.real_ytd / 1000000) }}
+              {% elif meta.real_ytd >= 1000 %}
+                {{ "%.1fk"|format(meta.real_ytd / 1000) }}
+              {% else %}
+                {{ "{:,.0f}".format(meta.real_ytd) }}
+              {% endif %}
+            {% else %}—{% endif %}
+          </span>
+        </div>
+
+        <div class="ytd-progress-wrap">
+          <div class="ytd-progress-fill"
+               style="height:{{ [meta.pct_ytd, 100]|min }}%;
+                      background:{{ meta.cor_ytd }};">
+          </div>
+        </div>
+
+        {% else %}
+        <div class="ytd-numero" style="color:#484f58">—</div>
+        <div class="ytd-progress-wrap">
+          <div class="ytd-progress-fill"
+               style="height:0%;background:#484f58;"></div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Gráfico de linha (clicável) -->
+      <div class="grafico-ind-wrapper"
+           onclick="abrirGraficoFull('{{ ind|replace("'", "\\'") }}')"
+           title="Clique para ampliar">
+        <div class="grafico-expand-hint">🔍 ampliar</div>
+        <div id="graf-{{ idx }}" class="grafico-ind"></div>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- MODAL FULLSCREEN DO GRÁFICO -->
+<div class="modal-overlay" id="modalGraficoFull">
+  <div class="modal modal-grafico-full">
+    <div class="modal-header">
+      <h3 id="modalGraficoTitulo"
+          style="color:#e6edf3;margin:0;font-size:1rem;">
+        Indicador
+      </h3>
+      <button class="modal-close"
+              onclick="fecharGraficoFull()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <div id="graficoFullContainer"
+           style="width:100%;height:65vh;min-height:350px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Objeto global para armazenar os dados dos gráficos
+  const GRAFICOS = {
+    {% for ind in indicadores %}
+    {{ ind|tojson }}: {{ graficos[ind]|safe }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  };
+
+  // Renderiza os mini-gráficos ao carregar a página
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for ind in indicadores %}
+    (function () {
+      const el = document.getElementById("graf-{{ loop.index }}");
+      const g  = GRAFICOS[{{ ind|tojson }}];
+      if (!el || !g) return;
+      const layout = Object.assign({}, g.layout || {});
+      layout.margin        = { l: 36, r: 8, t: 20,
+                               b: (layout.margin && layout.margin.b) || 30 };
+      layout.showlegend    = false; // Esconde a legenda nos mini-gráficos
+      layout.paper_bgcolor = "#161b22";
+      layout.plot_bgcolor  = "#161b22";
+      Plotly.newPlot(el, g.data, layout, {
+        responsive:     true,
+        displayModeBar: false // Esconde a barra de ferramentas nos mini-gráficos
+      });
+    })();
+    {% endfor %}
+  });
+
+  // Abre o modal com o gráfico em tela cheia
+  function abrirGraficoFull(ind) {
+    const graf = GRAFICOS[ind];
+    if (!graf) return;
+
+    document.getElementById("modalGraficoTitulo").textContent = ind;
+
+    const container = document.getElementById("graficoFullContainer");
+    Plotly.purge(container); // Limpa qualquer gráfico anterior
+
+    const layout = Object.assign({}, graf.layout || {});
+    layout.height        = Math.floor(window.innerHeight * 0.62); // Altura responsiva
+    layout.margin        = { l: 50, r: 20, t: 40, b: 60 };
+    layout.showlegend    = true; // Mostra a legenda no modal
+    layout.paper_bgcolor = "#161b22";
+    layout.plot_bgcolor  = "#161b22";
+
+    // Ajusta o tamanho dos marcadores e linhas para o gráfico ampliado
+    const data = (graf.data || []).map(trace => {
+      const t = JSON.parse(JSON.stringify(trace));
+      if (t.marker) t.marker.size = 7;
+      if (t.line)   t.line.width  = 2;
+      return t;
+    });
+
+    Plotly.newPlot(container, data, layout, {
+      responsive:     true,
+      displayModeBar: true, // Mostra a barra de ferramentas no modal
+      modeBarButtonsToRemove: ["sendDataToCloud", "lasso2d", "select2d"],
+      displaylogo: false
+    });
+
+    document.getElementById("modalGraficoFull").classList.add("open");
+  }
+
+  // Fecha o modal do gráfico
+  function fecharGraficoFull() {
+    document.getElementById("modalGraficoFull").classList.remove("open");
+    Plotly.purge(document.getElementById("graficoFullContainer")); // Limpa o gráfico ao fechar
+  }
+
+  // Fecha o modal com a tecla ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") fecharGraficoFull();
+  });
+
+  // Fecha o modal clicando fora dele
+  document.getElementById("modalGraficoFull")
+    .addEventListener("click", function (e) {
+      if (e.target === this) fecharGraficoFull();
+    });
+</script>
+
+{% endblock %}

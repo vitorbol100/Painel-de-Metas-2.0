@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">📁 Metas por Setores</h1>
+  <p class="page-subtitle">Selecione um setor para ver os indicadores detalhados</p>
+</div>
+
+<div class="setores-grid">
+  {% for item in ranking %}
+  <a href="{{ url_for('setor', nome=item.setor) }}" class="setor-card borda-{{ item.classe }}">
+    <span class="setor-card-icon">📊</span>
+    <div class="setor-card-body">
+      <div class="setor-card-nome">{{ item.setor }}</div>
+      <div class="setor-card-media ating-{{ item.classe }}">
+        {% if item.media is not none %}
+          {{ "%.1f"|format(item.media) }}%
+        {% else %}—{% endif %}
+      </div>
+      <div class="setor-card-label">Média Geral</div>
+      <div class="setor-card-bar-wrap">
+        <div class="setor-card-bar-fill"
+             style="width:{{ [item.media, 100]|min }}%;
+                    background:{{ '#3fb950' if item.classe == 'green' else '#d29922' if item.classe == 'yellow' else '#f85149' if item.classe == 'red' else '#484f58' }};">
+        </div>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+  {% if not ranking %}
+  <div class="em-construcao" style="grid-column: 1 / -1;">
+    <div class="em-construcao-icon">⚠️</div>
+    <div class="em-construcao-texto">Nenhum setor encontrado ou dados insuficientes.</div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
